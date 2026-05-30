@@ -1,0 +1,9 @@
+CREATE TABLE bookings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    show_id UUID REFERENCES shows(id) ON DELETE CASCADE,
+    total_amount INTEGER NOT NULL CHECK (total_amount >= 0),
+    status TEXT CHECK (status IN ('PENDING', 'CONFIRMED', 'FAILED', 'EXPIRED')) DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

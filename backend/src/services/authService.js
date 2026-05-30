@@ -8,7 +8,7 @@ export const signupUser = async (email, password) => {
         throw new Error("User already exists");
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    await createUser(email, hashedPassword);
+    await createUser(email, hashedPassword, "user");
     return { message: "User created successfully!" };
 };
 
@@ -26,13 +26,19 @@ export const loginUser = async (email, password) => {
         throw new Error("Invalid credentials");
     }
     const accessToken = jwt.sign(
-        { userId: user.id},
+        {
+            userId: user.id,
+            role: user.role
+        },
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
     );
 
     const refreshToken = jwt.sign(
-        { userId: user.id },
+        {
+            userId: user.id,
+            role: user.role
+        },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
     );
@@ -59,7 +65,10 @@ export const refreshAccessToken = async (refreshToken) => {
 
         // 3. Generate new access token
         const newAccessToken = jwt.sign(
-            { userId: decoded.userId },
+            { 
+                userId: decoded.userId,
+                role: decoded.role
+            },
             process.env.JWT_SECRET,
             { expiresIn: "15m" }
         );
